@@ -39,7 +39,7 @@ main{padding:10px;max-width:1200px;margin:auto}
 @media print{body.pr>*:not(#struk){display:none!important}body.pr #struk{display:block}html,body{background:#fff!important}}
 </style></head><body>
 <header>
-<button data-t="kasir" class="on">Kasir</button><button data-t="produk">Produk</button><button data-t="lap">Laporan</button><button data-t="bk">Pengaturan</button>
+<button data-t="kasir" class="on">Kasir</button><button data-t="produk">Produk</button><button data-t="lap">Laporan</button><button data-t="ly">Layanan</button><button data-t="bk">Pengaturan</button>
 </header>
 <main>
 <section id="kasir" class="tab on"><div id="tb"></div><div class="card" id="mk"></div><div class="g2">
@@ -71,6 +71,22 @@ main{padding:10px;max-width:1200px;margin:auto}
 <div class="card" style="margin-top:10px"><b>Pengeluaran</b><div class="mu">Biaya operasional (listrik, plastik, gaji). Belanja stok dicatat di Stok masuk.</div><div class="fg" style="margin-top:6px"><div class="w"><input id="xk" placeholder="Keterangan"></div><div><input id="xj" type="number" inputmode="numeric" placeholder="Nominal"></div><div><label><input id="xl" type="checkbox" checked style="width:auto"> dari uang laci</label></div></div><div class="btns"><button class="p" onclick="xAdd()">Tambah</button></div><div id="xlist"></div></div><div class="card" style="margin-top:10px"><b>Stok menipis (≤5)</b><div id="low"></div></div>
 <div class="card"><b>Riwayat tutup kasir</b><div id="tk"></div></div><div class="card"><b>Riwayat transaksi</b><div id="rw"></div></div></section>
 
+<section id="ly" class="tab">
+<div class="card"><span class="mu">Kas layanan (terpisah dari laci toko)</span><br><b id="lysal" style="font-size:22px"></b>
+<div class="fg" style="margin-top:8px"><div><select id="mj"><option value="1">Tambah modal</option><option value="-1">Ambil modal</option></select></div><div><input id="mn" type="number" inputmode="numeric" placeholder="Nominal"></div><div class="w"><label><input id="ml" type="checkbox" style="width:auto"> Dari/ke uang laci toko (mengubah kas laci)</label></div></div>
+<div class="btns"><button class="p" onclick="mAdd()">Simpan modal</button></div></div>
+<div class="card"><b>Catat layanan</b><div class="fg" style="margin-top:6px">
+<div><label>Jenis</label><select id="lj"><option value="tarik">Tarik tunai</option><option value="topup">Top up</option><option value="tf">Transfer</option></select></div>
+<div><label>Platform</label><input id="lp" list="lpl" placeholder="GoPay, DANA…"></div>
+<div><label>Nominal</label><input id="ln" type="number" inputmode="numeric"></div>
+<div><label>Admin (dari pelanggan)</label><input id="la" type="number" inputmode="numeric" placeholder="0"></div>
+<div><label>Biaya ditanggung toko</label><input id="lb" type="number" inputmode="numeric" placeholder="0"></div>
+<div><label>Admin dibayar</label><select id="lt"><option value="1">Tunai</option><option value="0" selected>Non-tunai (ikut QRIS)</option></select></div>
+<div class="w"><label>Nama penerima (top up / transfer)</label><input id="lr" placeholder="Nama pemilik akun/rekening tujuan"></div><div class="w"><label>No. tujuan / rekening (opsional)</label><input id="lnt" inputmode="numeric"></div><div class="w"><label>Catatan (opsional)</label><input id="lc"></div></div>
+<div class="btns"><button onclick="lAdd()">Simpan</button><button class="p" onclick="lAdd(true)">Simpan &amp; cetak</button></div></div>
+<datalist id="lpl"><option value="GoPay"><option value="DANA"><option value="ShopeePay"><option value="OVO"><option value="Bank"></datalist>
+<div class="card"><b>Rekap hari ini</b><div id="lrk"></div></div>
+<div class="card"><b>Riwayat layanan</b><div id="lrw"></div></div></section>
 <section id="bk" class="tab"><div class="card"><b>Pengaturan struk</b><div class="fg" style="margin-top:6px"><div class="w"><label>Nama toko</label><input id="cn"></div><div class="w"><label>Alamat / telepon (opsional)</label><input id="ca"></div><div class="w"><label>Pesan bawah struk</label><input id="cf"></div><div><label>Lebar kertas</label><select id="cw"><option value="58">58 mm</option><option value="80">80 mm</option></select></div><div><label><input id="cauto" type="checkbox" style="width:auto"> Cetak otomatis setelah bayar</label></div></div><div class="btns"><button id="ct">Tes cetak</button><button class="p" id="cs">Simpan</button></div></div><div class="card"><b>QRIS toko (statis)</b><p class="mu">Unggah gambar QRIS DANA Bisnis tokomu (tangkapan layar atau foto QR). Tersimpan di tablet.</p><input type="file" id="qf" accept="image/*"><div id="qprev" style="margin-top:8px"></div><div class="btns"><button class="d" id="qd">Hapus gambar QRIS</button></div></div>
 <div class="card"><b>Backup</b><p class="mu">Data tersimpan di browser tablet. Backup rutin supaya aman jika data browser terhapus.</p>
 <div class="btns"><button class="p" id="cp">Salin backup</button><button id="dl">Unduh file</button></div></div>
@@ -81,7 +97,7 @@ main{padding:10px;max-width:1200px;margin:auto}
 </main>
 <div id="qov" style="display:none;position:fixed;inset:0;z-index:20;background:var(--bg);overflow:auto;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px));text-align:center"><div class="mu">Total tagihan QRIS</div><div class="tot" id="qtot" style="font-size:40px"></div><div id="qimg"></div><div class="mu">Pelanggan mengetik nominal sendiri. Pastikan sama dengan total di atas, lalu cek notifikasi DANA.</div><input id="qref" placeholder="Catatan/ref DANA (opsional)" style="margin:8px 0"><div class="btns"><button onclick="$('#qov').style.display='none'">Batal</button><button class="p" onclick="qOk()">Pembayaran diterima</button></div></div><div id="struk"></div><div id="toast"></div>
 <script>
-let S={p:[],t:[],k:{},m:[],x:[]},cart=[],db,editId=null;
+let S={p:[],t:[],k:{},m:[],x:[],ly:[],lm:[]},cart=[],db,editId=null;
 const $=s=>document.querySelector(s),P=id=>S.p.find(p=>p.id==id);
 const rp=n=>'Rp'+Math.round(n).toLocaleString('id-ID');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -89,7 +105,7 @@ function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';cl
 function idb(){return new Promise((res,rej)=>{try{const r=indexedDB.open('kasir',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>res(r.result);r.onerror=()=>rej()}catch(e){rej(e)}})}
 async function load(){let v;try{db=await idb();v=await new Promise(r=>{const q=db.transaction('kv').objectStore('kv').get('s');q.onsuccess=()=>r(q.result);q.onerror=()=>r()})}catch(e){}
 if(!v){try{v=JSON.parse(localStorage.getItem('kasir'))}catch(e){}}
-if(v&&v.p){S=v;S.k=S.k||{};S.m=S.m||[];S.x=S.x||[]}else{S.p=[
+if(v&&v.p){S=v;S.k=S.k||{};S.m=S.m||[];S.x=S.x||[];S.ly=S.ly||[];S.lm=S.lm||[]}else{S.p=[
 {id:1,nama:'Indomie Goreng',kat:'Mi & Makanan',eNama:'pcs',beli:2800,jual:3200,gNama:'dus',gIsi:40,gBeli:108000,gJual:122000,stok:80},
 {id:2,nama:'Gula Pasir 1kg',kat:'Sembako',eNama:'kg',beli:15000,jual:17000,gNama:'karung',gIsi:50,gBeli:720000,gJual:800000,stok:100},
 {id:3,nama:'Teh Botol 450ml',kat:'Minuman',eNama:'botol',beli:3500,jual:4500,gNama:'krat',gIsi:24,gBeli:80000,gJual:100000,stok:48}];save()}
@@ -98,7 +114,7 @@ rAll()}
 function save(){try{localStorage.setItem('kasir',JSON.stringify(S))}catch(e){}try{if(db)db.transaction('kv','readwrite').objectStore('kv').put(S,'s')}catch(e){}}
 const cats=()=>[...new Set(S.p.map(p=>p.kat))].sort();
 document.querySelectorAll('header button').forEach(b=>b.onclick=()=>{document.querySelectorAll('header button').forEach(x=>x.classList.toggle('on',x==b));document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.id==b.dataset.t));rAll()});
-function rAll(){rList();rCart();rProd();rLap();rMk();rCfg()}
+function rAll(){rList();rCart();rProd();rLap();rMk();rCfg();rLy()}
 const dk=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const fd=t=>new Date(t).toLocaleString('id-ID',{dateStyle:'short',timeStyle:'short'});
 function rMk(){const k=S.k[dk()],e=$('#mk');
@@ -173,12 +189,13 @@ const xs=S.x.filter(x=>x.t>=from).sort((a,b)=>b.t-a.t),xt=xs.reduce((s,x)=>s+x.j
 const td=dk(),k=S.k[td]||{},awal=k.awal||0,jual=S.t.filter(t=>!t.void&&t.mt!='qris'&&dk(new Date(t.t))==td).reduce((s,t)=>s+t.total,0),
 qrs=S.t.filter(t=>!t.void&&t.mt=='qris'&&dk(new Date(t.t))==td).reduce((s,t)=>s+t.total-rtA(t),0),
 rf=S.t.filter(t=>!t.void&&t.mt!='qris').reduce((s,t)=>s+(t.ret||[]).filter(r=>dk(new Date(r.at))==td).reduce((a,r)=>a+r.a,0),0),
-xlc=S.x.filter(x=>x.laci&&dk(new Date(x.t))==td).reduce((s,x)=>s+x.j,0),exp=awal+jual-rf-xlc;KS={awal,jual,rf,xlc,exp,qrs};EXP=exp;$('#tb').innerHTML=k.tutup?'<div class="card low"><b>Kasir sudah ditutup.</b> Buka kembali di Laporan untuk transaksi baru.</div>':'';
-$('#kas').innerHTML=`<b>Kas hari ini</b><div class="row"><span>Modal awal (bukan omzet)</span><span>${rp(awal)}</span></div><div class="row"><span>Penjualan tunai</span><span>${rp(jual)}</span></div><div class="row"><span class="mu">QRIS hari ini (bukan di laci)</span><span class="mu">${rp(qrs)}</span></div><div class="row"><span>Retur dikembalikan</span><span>−${rp(rf)}</span></div><div class="row"><span>Pengeluaran dari laci</span><span>−${rp(xlc)}</span></div><div class="row"><b>Uang seharusnya di laci</b><b>${rp(exp)}</b></div>
+xlc=S.x.filter(x=>x.laci&&dk(new Date(x.t))==td).reduce((s,x)=>s+x.j,0),lml=S.lm.filter(m=>m.laci&&dk(new Date(m.t))==td).reduce((s,m)=>s+m.j,0),exp=awal+jual-rf-xlc-lml;KS={awal,jual,rf,xlc,lml,exp,qrs};EXP=exp;$('#tb').innerHTML=k.tutup?'<div class="card low"><b>Kasir sudah ditutup.</b> Buka kembali di Laporan untuk transaksi baru.</div>':'';
+$('#kas').innerHTML=`<b>Kas hari ini</b><div class="row"><span>Modal awal (bukan omzet)</span><span>${rp(awal)}</span></div><div class="row"><span>Penjualan tunai</span><span>${rp(jual)}</span></div><div class="row"><span class="mu">QRIS hari ini (bukan di laci)</span><span class="mu">${rp(qrs)}</span></div><div class="row"><span>Retur dikembalikan</span><span>−${rp(rf)}</span></div><div class="row"><span>Pengeluaran dari laci</span><span>−${rp(xlc)}</span></div><div class="row"><span>Pindah ke kas layanan</span><span>−${rp(lml)}</span></div><div class="row"><b>Uang seharusnya di laci</b><b>${rp(exp)}</b></div>
 ${k.tutup?`<div class="card" style="margin:8px 0 0;background:var(--ac2)"><b>Kasir ditutup ${fd(k.tutup.at)}</b><div class="row"><span>Uang dihitung</span><span>${rp(k.tutup.hitung)}</span></div><div class="row"><span>Selisih</span><b class="${k.tutup.selisih<0?'low':''}">${rp(k.tutup.selisih)}${k.tutup.selisih==0?' (pas)':''}</b></div><div class="btns"><button onclick="cetakTutup('${td}')">Cetak laporan</button><button onclick="bukaKasir(this)">Buka kembali</button></div></div>`:`<label class="mu">Hitung uang di laci saat tutup toko</label><div class="row"><input id="ak" type="number" inputmode="numeric" value="${k.akhir??''}" placeholder="0" oninput="selK()"><button class="p" onclick="tutupKasir(this)" style="white-space:nowrap">Tutup kasir</button></div><div id="selk" class="mu"></div>`}`;
 const c=(a,b,x='')=>`<div class="card"><span class="mu">${a}</span><br><b>${b}</b>${x}</div>`;
+const sl=S.ly.filter(x=>x.t>=from).reduce((s,x)=>s+x.a-x.b,0);
 const omq=l.filter(t=>t.mt=='qris').reduce((s,t)=>s+t.total-rtA(t),0);
-$('#sum').innerHTML=c('Omzet',rp(om))+c('Laba kotor',rp(lb))+c('Pengeluaran',rp(xt))+c('Laba bersih',`<span class="${lb-xt<0?'low':''}">${rp(lb-xt)}</span>`)+c('Transaksi',l.length,nb?`<div class="mu">${nb} dibatalkan</div>`:'')+c('Retur',rp(rtot))+`<div class="card" style="grid-column:1/-1;margin:0"><div class="row"><span>Omzet tunai</span><b>${rp(om-omq)}</b></div><div class="row"><span>Omzet QRIS</span><b>${rp(omq)}</b></div></div>`;
+$('#sum').innerHTML=c('Omzet',rp(om))+c('Laba kotor',rp(lb))+c('Pengeluaran',rp(xt))+c('Laba bersih',`<span class="${lb+sl-xt<0?'low':''}">${rp(lb+sl-xt)}</span>`)+c('Transaksi',l.length,nb?`<div class="mu">${nb} dibatalkan</div>`:'')+c('Retur',rp(rtot))+`<div class="card" style="grid-column:1/-1;margin:0"><div class="row"><span>Omzet tunai</span><b>${rp(om-omq)}</b></div><div class="row"><span>Omzet QRIS</span><b>${rp(omq)}</b></div><div class="row"><span>Laba layanan (admin − biaya)</span><b>${rp(sl)}</b></div></div>`;
 $('#xlist').innerHTML=xs.map(x=>`<div class="row" style="margin:6px 0"><span>${fd(x.t)} · ${esc(x.k)}${x.laci?'':' <span class="mu">(non-laci)</span>'}</span><span>${rp(x.j)} <button class="d" onclick="xDel(${x.id},this)" style="padding:4px 10px">×</button></span></div>`).join('')||'<p class="mu">Belum ada pengeluaran di periode ini.</p>';
 $('#tk').innerHTML=Object.keys(S.k).filter(d=>S.k[d].tutup).sort().reverse().slice(0,14).map(d=>{const t=S.k[d].tutup;return`<div class="row" style="margin:6px 0"><span>${esc(d)}</span><span>Omzet ${rp(t.om)} · <span class="${t.selisih<0?'low':''}">selisih ${rp(t.selisih)}</span></span></div>`}).join('')||'<p class="mu">Belum ada.</p>';
 $('#low').innerHTML=S.p.filter(p=>p.stok<=5).map(p=>`<div class="row"><span>${esc(p.nama)}</span><span class="low">${p.stok} ${esc(p.eNama)}</span></div>`).join('')||'<p class="mu">Semua stok aman.</p>';
@@ -187,13 +204,28 @@ $('#rw').innerHTML=all.slice(0,200).map(t=>`<details style="margin:6px 0"><summa
 ${(t.ret||[]).map(r=>`<div>↩ ${fd(r.at)}: ${esc(r.n)} ${r.q} ${esc(r.u)} · ${rp(r.a)} · ${r.m=='s'?'balik stok':'cacat'}</div>`).join('')}Bayar ${rp(t.bayar)} · Kembali ${rp(t.kem)} · Laba ${rp(t.laba-rtL(t))}${t.void?`<br>Dibatalkan ${fd(t.void.at)}${t.void.alasan?' — '+esc(t.void.alasan):''}`:''}</div><button style="margin-top:6px;width:100%" onclick="cetak(${t.id})">Cetak struk</button>${t.void?'':`<input id="al${t.id}" placeholder="Alasan pembatalan (opsional)" style="margin-top:6px"><button class="d" style="margin-top:6px;width:100%" onclick="vd(${t.id},this)">Batalkan seluruh transaksi</button>`}</details>`).join('')||'<p class="mu">Belum ada transaksi.</p>'}
 $('#per').onchange=rLap;
 /* BACKUP */
-const dump=()=>JSON.stringify({app:'kasir-toko',v:1,at:Date.now(),p:S.p,t:S.t,k:S.k,m:S.m,x:S.x,cfg:S.cfg});
+const dump=()=>JSON.stringify({app:'kasir-toko',v:1,at:Date.now(),p:S.p,t:S.t,k:S.k,m:S.m,x:S.x,cfg:S.cfg,ly:S.ly,lm:S.lm});
 $('#cp').onclick=async()=>{try{await navigator.clipboard.writeText(dump());toast('Backup disalin. Tempel ke catatan/WhatsApp')}catch(e){$('#rt').value=dump();$('#rt').select();toast('Salin teks di kotak restore')}};
 $('#dl').onclick=()=>{try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([dump()],{type:'application/json'}));a.download='backup-kasir-'+new Date().toISOString().slice(0,10)+'.json';a.click()}catch(e){toast('Unduh gagal, pakai Salin backup')}};
-function restore(txt){try{const o=JSON.parse(txt);if(!Array.isArray(o.p)||!Array.isArray(o.t))throw 0;S={p:o.p,t:o.t,k:o.k||{},m:o.m||[],x:o.x||[],cfg:o.cfg};cart=[];save();rAll();toast('Data berhasil dipulihkan')}catch(e){toast('File backup tidak valid')}}
+function restore(txt){try{const o=JSON.parse(txt);if(!Array.isArray(o.p)||!Array.isArray(o.t))throw 0;S={p:o.p,t:o.t,k:o.k||{},m:o.m||[],x:o.x||[],cfg:o.cfg,ly:o.ly||[],lm:o.lm||[]};cart=[];save();rAll();toast('Data berhasil dipulihkan')}catch(e){toast('File backup tidak valid')}}
 $('#rf').onchange=e=>{const f=e.target.files[0];if(f){const r=new FileReader();r.onload=()=>restore(r.result);r.readAsText(f)}};
 $('#rs').onclick=()=>restore($('#rt').value);
-$('#rst').onclick=function(){if(this.dataset.y){S={p:[],t:[],k:{},m:[],x:[]};cart=[];save();rAll();this.dataset.y='';this.textContent='Hapus semua data';toast('Semua data dihapus')}else{this.dataset.y=1;this.textContent='Yakin? Tekan sekali lagi';setTimeout(()=>{this.dataset.y='';this.textContent='Hapus semua data'},3000)}};
+$('#rst').onclick=function(){if(this.dataset.y){S={p:[],t:[],k:{},m:[],x:[],ly:[],lm:[]};cart=[];save();rAll();this.dataset.y='';this.textContent='Hapus semua data';toast('Semua data dihapus')}else{this.dataset.y=1;this.textContent='Yakin? Tekan sekali lagi';setTimeout(()=>{this.dataset.y='';this.textContent='Hapus semua data'},3000)}};
+const jn={tarik:'Tarik tunai',topup:'Top up',tf:'Transfer'};
+const lcash=x=>(x.j=='tarik'?-x.n:x.n)+(x.at?x.a:0),lsal=()=>S.lm.reduce((s,m)=>s+m.j,0)+S.ly.reduce((s,x)=>s+lcash(x),0);
+function mAdd(){const v=+$('#mn').value;if(!(v>0))return toast('Isi nominal modal');S.lm.push({id:Date.now(),t:Date.now(),j:(+$('#mj').value)*v,laci:$('#ml').checked});save();$('#mn').value='';rAll();toast('Modal layanan tersimpan')}
+function lAdd(p){const n=+$('#ln').value;if(!(n>0))return toast('Isi nominal');const e={id:Date.now(),t:Date.now(),j:$('#lj').value,p:$('#lp').value.trim(),n,a:+$('#la').value||0,b:+$('#lb').value||0,at:+$('#lt').value,r:$('#lr').value.trim(),nt:$('#lnt').value.trim(),c:$('#lc').value.trim()};S.ly.push(e);save();['ln','la','lb','lc','lr','lnt'].forEach(k=>$('#'+k).value='');rAll();toast('Layanan tercatat');if(p===true)cetakLy(e.id)}
+function cetakLy(id){const x=S.ly.find(y=>y.id==id);if(!x)return;const c=cfg(),L=(a,b)=>`<div class="sr"><span>${a}</span><span>${b}</span></div>`,H='<div class="sh"></div>';
+cetakHTML(`<div style="text-align:center"><b>${esc(c.nama)}</b>${c.alamat?'<br>'+esc(c.alamat):''}<br>BUKTI ${esc(jn[x.j].toUpperCase())}</div>${H}${esc(fd(x.t))}${H}`
++(x.p?L('Platform',esc(x.p)):'')+(x.r?L('Penerima',esc(x.r)):'')+(x.nt?L('No. tujuan',esc(x.nt)):'')
++L('Nominal',nf(x.n))+L('Admin',nf(x.a))+H+L('<b>Total</b>','<b>'+nf(x.n+x.a)+'</b>')+(x.c?'<div>'+esc(x.c)+'</div>':'')+H+`<div style="text-align:center">${esc(c.footer)}</div>`)}
+function lDel(id,ty,b){if(!b.dataset.y){b.dataset.y=1;b.textContent='Yakin?';setTimeout(()=>{b.dataset.y='';b.textContent='×'},3000);return}if(ty=='l')S.ly=S.ly.filter(x=>x.id!=id);else S.lm=S.lm.filter(x=>x.id!=id);save();rAll()}
+$('#lj').onchange=()=>{$('#lt').value=$('#lj').value=='tarik'?'0':'1'};
+function rLy(){const sal=lsal(),td=dk(),h=S.ly.filter(x=>dk(new Date(x.t))==td);
+$('#lysal').innerHTML=`<span class="${sal<0?'low':''}">${rp(sal)}</span>`;
+$('#lrk').innerHTML=[['Transaksi',h.length],['Laba layanan (admin − biaya)',rp(h.reduce((s,x)=>s+x.a-x.b,0))],['Masuk ke DANA (tarik tunai)',rp(h.filter(x=>x.j=='tarik').reduce((s,x)=>s+x.n+(x.at?0:x.a),0))],['Keluar dari SeaBank (top up/transfer)',rp(h.filter(x=>x.j!='tarik').reduce((s,x)=>s+x.n+x.b,0))]].map(r=>`<div class="row" style="margin:6px 0"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')+'<div class="mu">Cocokkan dua angka terakhir dengan mutasi DANA Bisnis dan SeaBank.</div>';
+const all=S.ly.map(x=>({...x,ty:'l'})).concat(S.lm.map(m=>({...m,ty:'m'}))).sort((a,b)=>b.t-a.t).slice(0,40);
+$('#lrw').innerHTML=all.map(x=>`<div class="row" style="margin:6px 0"><div>${x.ty=='l'?`<b>${jn[x.j]}</b> ${esc(x.p)} ${rp(x.n)}<div class="mu">${fd(x.t)} · admin ${rp(x.a)}${x.b?' · biaya '+rp(x.b):''}${x.r?' · ke '+esc(x.r):''}${x.nt?' ('+esc(x.nt)+')':''}${x.c?' · '+esc(x.c):''}</div>`:`<b>${x.j>0?'Tambah':'Ambil'} modal</b> ${rp(Math.abs(x.j))}<div class="mu">${fd(x.t)}${x.laci?' · dari/ke laci toko':''}</div>`}</div><div class="btns" style="margin:0">${x.ty=='l'?`<button onclick="cetakLy(${x.id})" style="padding:6px 10px">Cetak</button>`:''}<button class="d" onclick="lDel(${x.id},'${x.ty}',this)" style="padding:6px 10px">×</button></div></div>`).join('')||'<p class="mu">Belum ada.</p>'}
 let EXP=0,KS={},METODE='tunai',QOK=false,QREF='';
 function showQ(tot){$('#qtot').textContent=rp(tot);const q=cfg().qris;$('#qimg').innerHTML=q?`<img src="${q}" style="max-width:100%;max-height:58vh;margin:10px auto;display:block;background:#fff;border-radius:12px">`:'<p class="low">Gambar QRIS belum diunggah. Buka Pengaturan.</p>';$('#qref').value='';$('#qov').style.display='block'}
 function qOk(){QOK=true;QREF=$('#qref').value.trim();$('#pay').onclick()}
@@ -210,7 +242,7 @@ function bukaKasir(b){if(!b.dataset.y){b.dataset.y=1;b.textContent='Yakin? Tekan
 delete S.k[dk()].tutup;save();rAll();toast('Kasir dibuka kembali')}
 function cetakHTML(h){const c=cfg(),e=$('#struk');e.innerHTML=h;e.style.maxWidth=(c.lebar=='80'?72:48)+'mm';let st=$('#pgs');if(!st){st=document.createElement('style');st.id='pgs';document.head.appendChild(st)}st.textContent=`@page{size:${c.lebar}mm auto;margin:0}`;document.body.classList.add('pr');setTimeout(()=>{try{window.print()}catch(x){toast('Cetak tidak didukung di browser ini')}},80)}
 function cetakTutup(key){const k=S.k[key],t=k&&k.tutup;if(!t)return;const c=cfg(),L=(a,b)=>`<div class="sr"><span>${a}</span><span>${b}</span></div>`,H='<div class="sh"></div>';
-cetakHTML(`<div style="text-align:center"><b>${esc(c.nama)}</b><br>LAPORAN TUTUP KASIR</div>${H}Tanggal ${esc(key)}<br>Ditutup ${esc(fd(t.at))}${H}`+L('Modal awal',nf(t.awal))+L('Penjualan tunai',nf(t.jual))+L('QRIS (non-tunai)',nf(t.qrs||0))+L('Retur','-'+nf(t.rf))+L('Pengeluaran laci','-'+nf(t.xlc))+H+L('<b>Seharusnya</b>','<b>'+nf(t.exp)+'</b>')+L('Uang dihitung',nf(t.hitung))+L('<b>Selisih</b>','<b>'+nf(t.selisih)+'</b>')+H+L('Jumlah transaksi',t.n)+L('Omzet bersih',nf(t.om))+L('Laba kotor',nf(t.lb)))}
+cetakHTML(`<div style="text-align:center"><b>${esc(c.nama)}</b><br>LAPORAN TUTUP KASIR</div>${H}Tanggal ${esc(key)}<br>Ditutup ${esc(fd(t.at))}${H}`+L('Modal awal',nf(t.awal))+L('Penjualan tunai',nf(t.jual))+L('QRIS (non-tunai)',nf(t.qrs||0))+L('Retur','-'+nf(t.rf))+L('Pengeluaran laci','-'+nf(t.xlc))+L('Pindah ke kas layanan','-'+nf(t.lml||0))+H+L('<b>Seharusnya</b>','<b>'+nf(t.exp)+'</b>')+L('Uang dihitung',nf(t.hitung))+L('<b>Selisih</b>','<b>'+nf(t.selisih)+'</b>')+H+L('Jumlah transaksi',t.n)+L('Omzet bersih',nf(t.om))+L('Laba kotor',nf(t.lb)))}
 const cfg=()=>Object.assign({nama:'Toko Kelontong',alamat:'',footer:'Terima kasih',lebar:'58',auto:false},S.cfg||{});
 function rCfg(){const c=cfg();$('#cn').value=c.nama;$('#ca').value=c.alamat;$('#cf').value=c.footer;$('#cw').value=c.lebar;$('#cauto').checked=!!c.auto;$('#qprev').innerHTML=c.qris?`<img src="${c.qris}" style="max-width:170px;background:#fff;border-radius:8px">`:'<p class="mu">Belum ada gambar QRIS.</p>'}
 const nf=x=>Math.round(x).toLocaleString('id-ID');
