@@ -55,7 +55,7 @@ main{padding:10px;max-width:1200px;margin:auto}
 <section id="produk" class="tab">
 <div class="card"><div class="row"><input id="pq" placeholder="Cari produk…"><button class="p" id="add" style="white-space:nowrap">+ Produk</button><button id="addm" style="white-space:nowrap">+ Stok masuk</button></div></div>
 <div class="card" id="form" style="display:none"><div class="fg">
-<div class="w"><label>Nama</label><input id="f_nama"></div>
+<div class="w"><label>Nama</label><input id="f_nama"></div><div class="w"><label>Kata kunci di kemasan (untuk scan, opsional)</label><input id="f_kw" placeholder="mis. INDOMILK"></div>
 <div><label>Kategori</label><input id="f_kat" list="kl"></div><div><label>Stok saat ini (koreksi manual)</label><input id="f_stok" type="number" inputmode="decimal"></div>
 <div><label>Satuan eceran</label><input id="f_eNama" placeholder="pcs"></div><div></div>
 <div><label>Harga beli eceran</label><input id="f_beli" type="number" inputmode="numeric"></div><div><label>Harga jual eceran</label><input id="f_jual" type="number" inputmode="numeric"></div>
@@ -95,7 +95,7 @@ main{padding:10px;max-width:1200px;margin:auto}
 <div class="btns"><button class="p" id="rs">Pulihkan data</button></div></div>
 <div class="card"><button class="d" id="rst" style="width:100%">Hapus semua data</button></div></section>
 </main>
-<div id="qov" style="display:none;position:fixed;inset:0;z-index:20;background:var(--bg);overflow:auto;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px));text-align:center"><div class="mu">Total tagihan QRIS</div><div class="tot" id="qtot" style="font-size:40px"></div><div id="qimg"></div><div class="mu">Pelanggan mengetik nominal sendiri. Pastikan sama dengan total di atas, lalu cek notifikasi DANA.</div><input id="qref" placeholder="Catatan/ref DANA (opsional)" style="margin:8px 0"><div class="btns"><button onclick="$('#qov').style.display='none'">Batal</button><button class="p" onclick="qOk()">Pembayaran diterima</button></div></div><div id="sov" style="display:none;position:fixed;inset:0;z-index:20;background:var(--bg);overflow:auto;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px))"><div class="row"><b>Scan teks produk</b><button onclick="scClose()">Tutup</button></div><video id="sv" playsinline muted style="width:100%;max-height:48vh;background:#000;border-radius:12px;margin-top:8px"></video><div class="btns"><button class="p" onclick="scShot()">Ambil &amp; baca</button></div><label class="mu" style="display:block;margin-top:8px">Atau ambil/pilih foto:<input id="sf" type="file" accept="image/*" capture="environment" style="margin-top:4px"></label><div id="sst" class="mu" style="margin-top:8px"></div><div id="sres"></div></div><div id="struk"></div><div id="toast"></div>
+<div id="qov" style="display:none;position:fixed;inset:0;z-index:20;background:var(--bg);overflow:auto;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px));text-align:center"><div class="mu">Total tagihan QRIS</div><div class="tot" id="qtot" style="font-size:40px"></div><div id="qimg"></div><div class="mu">Pelanggan mengetik nominal sendiri. Pastikan sama dengan total di atas, lalu cek notifikasi DANA.</div><input id="qref" placeholder="Catatan/ref DANA (opsional)" style="margin:8px 0"><div class="btns"><button onclick="$('#qov').style.display='none'">Batal</button><button class="p" onclick="qOk()">Pembayaran diterima</button></div></div><div id="sov" style="display:none;position:fixed;inset:0;z-index:20;background:var(--bg);overflow:auto;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px))"><div class="row"><b>Scan teks produk</b><button onclick="scClose()">Tutup</button></div><div style="position:relative;margin-top:8px;overflow:hidden;border-radius:12px;background:#000"><video id="sv" playsinline muted style="display:block;width:100%;height:46vh;object-fit:cover"></video><div style="position:absolute;left:10%;top:25%;width:80%;height:50%;border:3px solid #fff;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.4);pointer-events:none"></div></div><div class="mu" style="margin-top:6px">Pas-kan tulisan merek di dalam kotak putih. Dekat, terang, tanpa pantulan.</div><div class="btns"><button class="p" onclick="scShot()">Ambil &amp; baca</button></div><label class="mu" style="display:block;margin-top:8px">Atau ambil/pilih foto:<input id="sf" type="file" accept="image/*" capture="environment" style="margin-top:4px"></label><div id="sst" class="mu" style="margin-top:8px"></div><img id="sth" style="display:none;max-width:200px;border-radius:8px;margin-top:8px"><div id="sres"></div></div><div id="struk"></div><div id="toast"></div>
 <script>
 let S={p:[],t:[],k:{},m:[],x:[],ly:[],lm:[]},cart=[],db,editId=null;
 const $=s=>document.querySelector(s),P=id=>S.p.find(p=>p.id==id);
@@ -160,7 +160,7 @@ function rProd(){const q=$('#pq').value.toLowerCase();$('#pt').innerHTML=S.p.fil
 <div class="mu">Eceran ${rp(p.jual)} (modal ${rp(p.beli)})${p.pN>0&&p.pM>0?` · Promo beli ${p.pN} gratis ${p.pM}`:''}${p.gIsi>0?` · ${esc(p.gNama)} isi ${p.gIsi}: ${rp(p.gJual)} (modal ${rp(p.gBeli)})`:''}</div></div>
 <div class="btns" style="flex-direction:column;width:90px"><button onclick="smOpen(${p.id})">Stok+</button><button onclick="edit(${p.id})">Ubah</button><button class="d" onclick="del(${p.id},this)">Hapus</button></div></div></div>`).join('')||'<p class="mu">Belum ada produk.</p>';rSm()}
 $('#pq').oninput=rProd;
-const F=['nama','kat','stok','eNama','beli','jual','gNama','gIsi','gBeli','gJual','pN','pM','pC'];
+const F=['nama','kat','stok','eNama','beli','jual','gNama','gIsi','gBeli','gJual','pN','pM','pC','kw'];
 function edit(id){editId=id;const p=id?P(id):{};F.forEach(k=>$('#f_'+k).value=p[k]??'');$('#form').style.display='block';$('#f_nama').focus();scrollTo(0,0)}
 $('#add').onclick=()=>edit(null);$('#addm').onclick=()=>smOpen(null);
 function rSm(){$('#sm').innerHTML=S.m.slice(-30).reverse().map(m=>`<div class="row" style="margin-top:6px"><span>${fd(m.t)} · ${esc(m.n)}</span><b>+${m.q} ${esc(m.u)}</b></div>${m.h||m.c?`<div class="mu">${m.h?'modal '+rp(m.h):''}${m.h&&m.c?' · ':''}${esc(m.c||'')}</div>`:''}`).join('')||'<p class="mu">Belum ada.</p>'}
@@ -170,7 +170,7 @@ $('#sp').onchange=suOpt;$('#sx').onclick=()=>$('#smf').style.display='none';
 $('#ss').onclick=()=>{const p=P($('#sp').value),q=+$('#sq').value,g=$('#su').value=='g';if(!p||!(q>0))return toast('Isi jumlah');const h=+$('#sh').value||0;
 p.stok=r3(p.stok+q*(g?p.gIsi:1));if(h>0){g?p.gBeli=h:p.beli=h}
 S.m.push({id:Date.now(),t:Date.now(),pid:p.id,n:p.nama,q,u:g?p.gNama:p.eNama,h:h||null,c:$('#sc').value.trim()});save();$('#smf').style.display='none';rAll();toast('Stok bertambah')};$('#fx').onclick=()=>$('#form').style.display='none';
-$('#fs').onclick=()=>{const g=k=>$('#f_'+k).value,o={nama:g('nama').trim(),kat:g('kat').trim()||'Umum',eNama:g('eNama').trim()||'pcs',beli:+g('beli')||0,jual:+g('jual')||0,gNama:g('gNama').trim()||'dus',gIsi:+g('gIsi')||0,gBeli:+g('gBeli')||0,gJual:+g('gJual')||0,pN:+g('pN')||0,pM:+g('pM')||0,pC:g('pC')=='1'?1:0,stok:+g('stok')||0};
+$('#fs').onclick=()=>{const g=k=>$('#f_'+k).value,o={nama:g('nama').trim(),kat:g('kat').trim()||'Umum',eNama:g('eNama').trim()||'pcs',beli:+g('beli')||0,jual:+g('jual')||0,gNama:g('gNama').trim()||'dus',gIsi:+g('gIsi')||0,gBeli:+g('gBeli')||0,gJual:+g('gJual')||0,pN:+g('pN')||0,pM:+g('pM')||0,pC:g('pC')=='1'?1:0,kw:g('kw').trim(),stok:+g('stok')||0};
 if(!o.nama||!o.jual)return toast('Nama dan harga jual wajib diisi');editId?Object.assign(P(editId),o):S.p.push({id:Date.now(),...o});save();$('#form').style.display='none';rAll()};
 function del(id,b){if(b.dataset.y){S.p=S.p.filter(p=>p.id!=id);cart=cart.filter(c=>c.pid!=id);save();rAll()}else{b.dataset.y=1;b.textContent='Yakin?';setTimeout(()=>{b.dataset.y='';b.textContent='Hapus'},3000)}}
 /* LAPORAN */
@@ -232,17 +232,25 @@ function lev(a,b){const m=a.length,n=b.length;if(Math.abs(m-n)>2)return 9;let p=
 function loadJs(u){return new Promise((res,rej)=>{if(window.Tesseract)return res();const e=document.createElement('script');e.src=u;e.onload=res;e.onerror=()=>rej(new Error('load'));document.head.appendChild(e)})}
 async function scOpen(){$('#sov').style.display='block';$('#sres').innerHTML='';$('#sst').textContent='';try{SSTREAM=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});$('#sv').srcObject=SSTREAM;await $('#sv').play()}catch(e){$('#sst').textContent='Kamera tidak bisa dibuka. Izinkan akses kamera, atau pakai opsi ambil foto di bawah.'}}
 function scClose(){if(SSTREAM){SSTREAM.getTracks().forEach(t=>t.stop());SSTREAM=null}$('#sov').style.display='none'}
-async function scRead(src,w,h){$('#sst').textContent='Membaca…';try{if(!OCRW){$('#sst').textContent='Memuat mesin baca (butuh internet pertama kali)…';await loadJs(TESS);OCRW=await Tesseract.createWorker('eng');await OCRW.setParameters({tessedit_pageseg_mode:'11'})}
-const cv=document.createElement('canvas'),m=Math.min(1,1400/Math.max(w,h));cv.width=Math.round(w*m);cv.height=Math.round(h*m);const cx=cv.getContext('2d');cx.filter='grayscale(1) contrast(1.4)';cx.drawImage(src,0,0,cv.width,cv.height);
-$('#sst').textContent='Membaca…';const r=await OCRW.recognize(cv);scMatch(r.data.text||'')}catch(e){OCRW=null;$('#sst').textContent='Gagal membaca. Pertama kali butuh internet; coba lagi, atau cari manual.'}}
-function scShot(){const v=$('#sv');if(!v.videoWidth)return toast('Kamera belum siap');scRead(v,v.videoWidth,v.videoHeight)}
+function scBox(){const v=$('#sv'),bw=v.clientWidth,bh=v.clientHeight,vw=v.videoWidth,vh=v.videoHeight,k=Math.max(bw/vw,bh/vh),cw=Math.min(vw,.8*bw/k),ch=Math.min(vh,.5*bh/k);return[(vw-cw)/2,(vh-ch)/2,cw,ch]}
+async function scRead(src,x,y,w,h){$('#sst').textContent='Menyiapkan…';try{
+if(!OCRW){$('#sst').textContent='Memuat mesin baca (butuh internet pertama kali)…';await loadJs(TESS);OCRW=await Tesseract.createWorker('eng');await OCRW.setParameters({tessedit_pageseg_mode:'11'})}
+const m=Math.min(2.5,1100/Math.max(w,h)),cw=Math.round(w*m),ch=Math.round(h*m),cv=document.createElement('canvas');cv.width=cw;cv.height=ch;const cx=cv.getContext('2d',{willReadFrequently:true});cx.drawImage(src,x,y,w,h,0,0,cw,ch);
+$('#sth').src=cv.toDataURL('image/jpeg',.6);$('#sth').style.display='block';
+const px=cx.getImageData(0,0,cw,ch).data,vs=[(r,g,b)=>g,(r,g,b)=>r,(r,g,b)=>.299*r+.587*g+.114*b];let all='';
+for(let i=0;i<vs.length;i++){$('#sst').textContent='Membaca '+(i+1)+'/'+vs.length+'…';const o=cx.createImageData(cw,ch),q=o.data;
+for(let p=0;p<px.length;p+=4){const v=vs[i](px[p],px[p+1],px[p+2]);q[p]=q[p+1]=q[p+2]=v;q[p+3]=255}
+const c2=document.createElement('canvas');c2.width=cw;c2.height=ch;c2.getContext('2d').putImageData(o,0,0);all+=' '+((await OCRW.recognize(c2)).data.text||'')}
+scMatch(all)}catch(e){OCRW=null;$('#sst').textContent='Gagal membaca. Pertama kali butuh internet; coba lagi, atau cari manual.'}}
+function scShot(){const v=$('#sv');if(!v.videoWidth)return toast('Kamera belum siap');scRead(v,...scBox())}
 const norm=t=>t.toLowerCase().replace(/[^a-z0-9]+/g,' ').split(' ').filter(w=>w.length>=3);
 function scMatch(txt){const ws=norm(txt);$('#sst').innerHTML='Teks terbaca: <i>'+(esc(txt.replace(/\s+/g,' ').trim().slice(0,160))||'(kosong)')+'</i>';
-const sc=S.p.map(p=>{const ts=norm(p.nama);if(!ts.length)return{p,s:0};let tot=0,got=0;ts.forEach(t=>{tot+=t.length;let b=0;ws.forEach(w=>{let v=0;if(w==t)v=1;else if(Math.min(w.length,t.length)>=4&&(w.includes(t)||t.includes(w)))v=.9;else if(t.length>=5&&lev(w,t)<=1)v=.8;else if(t.length>=7&&lev(w,t)<=2)v=.7;if(v>b)b=v});got+=b*t.length});return{p,s:got/tot}}).filter(x=>x.s>=.4).sort((a,b)=>b.s-a.s).slice(0,5);
+const f=ts=>{if(!ts.length)return 0;let tot=0,got=0;ts.forEach(t=>{tot+=t.length;let b=0;ws.forEach(w=>{let v=0;if(w==t)v=1;else if(Math.min(w.length,t.length)>=4&&(w.includes(t)||t.includes(w)))v=.9;else if(t.length>=5&&lev(w,t)<=1)v=.8;else if(t.length>=7&&lev(w,t)<=2)v=.7;if(v>b)b=v});got+=b*t.length});return got/tot};
+const sc=S.p.map(p=>({p,s:Math.max(f(norm(p.nama)),p.kw?f(norm(p.kw)):0)})).filter(x=>x.s>=.4).sort((a,b)=>b.s-a.s).slice(0,5);
 $('#sres').innerHTML=sc.map(x=>`<button style="width:100%;margin-top:6px;text-align:left" onclick="scPick(${x.p.id})"><b>${esc(x.p.nama)}</b> <span class="mu">${rp(x.p.jual)}/${esc(x.p.eNama)} · cocok ${Math.round(x.s*100)}%</span></button>`).join('')||'<p class="mu">Tidak ada yang cocok. Dekatkan kamera ke tulisan merek, atau cari manual.</p>'}
 function scPick(id){add(id,'e');scClose();toast('Ditambahkan ke keranjang')}
 $('#scb').onclick=scOpen;
-$('#sf').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>scRead(im,im.width,im.height);im.src=URL.createObjectURL(f)};
+$('#sf').onchange=e=>{const f=e.target.files[0];if(!f)return;const im=new Image();im.onload=()=>scRead(im,0,0,im.width,im.height);im.src=URL.createObjectURL(f)};
 let EXP=0,KS={},METODE='tunai',QOK=false,QREF='';
 function showQ(tot){$('#qtot').textContent=rp(tot);const q=cfg().qris;$('#qimg').innerHTML=q?`<img src="${q}" style="max-width:100%;max-height:58vh;margin:10px auto;display:block;background:#fff;border-radius:12px">`:'<p class="low">Gambar QRIS belum diunggah. Buka Pengaturan.</p>';$('#qref').value='';$('#qov').style.display='block'}
 function qOk(){QOK=true;QREF=$('#qref').value.trim();$('#pay').onclick()}
